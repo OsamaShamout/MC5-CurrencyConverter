@@ -1,3 +1,5 @@
-<resources>
-    <string name="app_name">Currency Converter Live</string>
-</resources>
+ <resources>
+        <string name="app_name">Currency Live</string>
+        <string name="lets_get_started">Welcome to our currency converter <font color='#40CEEF'>LIVE!</font></string>
+        <string name="button_get_started">Let\'s get started</string>
+ </resources>
