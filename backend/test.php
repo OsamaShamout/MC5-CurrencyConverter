@@ -3,7 +3,7 @@
 //GETTING INFO
 
 //Get database information from db_info PHP file.
-include ("db_info.php");
+include ("db_config.php");
 
 curl
 //Prepare query to avoid SQL injections

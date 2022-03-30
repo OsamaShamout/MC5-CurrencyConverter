@@ -1,8 +1,8 @@
 <?php
 
-//ADDING INFO TO DB
+//THIS PHP FILE IS RESPONSIBLE FOR SENDING DATA INFO MYSQL DB.
 
-//Get database information from db_info PHP file.
+//Get database information from db_config PHP file.
 include ("db_info.php");
 
 //Obtain values from frontend

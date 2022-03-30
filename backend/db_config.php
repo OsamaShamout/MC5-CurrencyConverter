@@ -21,9 +21,4 @@ if(mysqli_connect_errno()){
 }
 
 
-// if ($mysqli->connect_error) {
-//     error_log('Connection error: ' . $mysqli->connect_error);
-// }
-
-
 ?>

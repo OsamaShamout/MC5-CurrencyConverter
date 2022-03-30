@@ -1,7 +1,13 @@
 package com.example.currencylive;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,29 +22,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity2 extends AppCompatActivity {
 
+    //Strings to store API results.
     private String value_sell;
     private String value_buy;
 
+    //Obtain information of buy and sell rate from lirarate.org
     public class DownloadTask extends AsyncTask<String, Void, String> {
         protected String doInBackground(String... urls){
-
-            //String to store API result.
 
             //Variables to initiate connection.
             URL url;
@@ -89,23 +90,26 @@ public class MainActivity2 extends AppCompatActivity {
                 Matcher m1 = p.matcher(rate_sell);
                 Matcher m2 = p.matcher(rate_buy);
 
-                //Create an array list and append to sell ArrayList upon finding a match into list for sell rate
+                //Create an ArrayList to append the sell rates upon finding a match from the parsed string.
                 ArrayList<String> arr = new ArrayList<String>();
+                //Keep finding the matches of the regex expression above and append
                 while(m1.find()  == true){
                     arr.add(m1.group(1));
                 }
-                Log.i("ArrayList Sell: ", Arrays.toString(arr.toArray()));
-                int need_index =  (arr.size()-3);
+                int need_index =  (arr.size()-1);
                 value_sell = arr.get(need_index).toString();
 
-                //Create an array list and append to buy ArrayList upon finding a match into list for buy rate
+
+                //Create an ArrayList to append the buy rates upon finding a match from the parsed string.
                 ArrayList<String> arr2 = new ArrayList<String>();
+
+                //Keep finding the matches of the regex expression above and append
                 while(m2.find()  == true){
                     arr.add(m2.group(1));
                 }
-                Log.i("ArrayList Buy: ", Arrays.toString(arr.toArray()));
-                int need_index2 =  (arr.size()-3);
+                int need_index2 =  (arr.size()-1);
                 value_buy = arr.get(need_index2).toString();
+
             }
 
 
@@ -116,45 +120,102 @@ public class MainActivity2 extends AppCompatActivity {
         }
     }
 
+    public class SendAPI extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... urls) {
+            //Variables to initiate connection.
+            URL url;
+            HttpsURLConnection https;
+
+            String urlString = urls[0]; // URL to call
+            String buy1 = urls[1]; //data buy to post
+            String sell1 = urls[2]; //data sell to post
+            OutputStream out = null;
+
+            try {
+                //Establishing connection between application and API.
+                url = new URL(urlString);
+                https = (HttpsURLConnection) url.openConnection();
+                out = new BufferedOutputStream(https.getOutputStream());
+
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                writer.write(buy1);
+                writer.write(sell1);
+                writer.flush();
+                writer.close();
+                out.close();
+
+                https.connect();
+            } catch (Exception e) {
+               Toast.makeText(getApplicationContext(), "Failed to send data to server.", Toast.LENGTH_LONG).show();
+            }
+            return "";
+        }
+    }
+
+    //Exchange initialized as USD-->LBP (sell).
     boolean flag_USA = true;
 
-    @Override
+
+    ImageView country_flag_from;
+    ImageView country_flag_to;
+
+    EditText value_inputted;
+    TextView result_value;
+    TextView dialogue3;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
+        country_flag_from = (ImageView) findViewById(R.id.coinIconFrom);
+        country_flag_to = (ImageView) findViewById(R.id.coinIconTo);
 
+        value_inputted = (EditText) findViewById(R.id.valueInput);
+        result_value = (TextView) findViewById(R.id.resultValue);
+
+        dialogue3 = (TextView) findViewById(R.id.dialogBoxUniversal);
+
+
+        //URL API to obtain buy and sell rates.
         String url = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t202233013";
 
-        String url2 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t202233013";
+        //URL API to send data to MySQL sever.
+        String url2 = "https://mcprojs.000webhostapp.com/backend/send_data.php";
 
+        //Perform obtaining buy and sell rate.
         DownloadTask task = new DownloadTask();
-
         task.execute(url);
-       // task.execute(url2);
 
-        value_received = (TextView) findViewById(R.id.resultValue);
-
-
-
+        //Perform to insert queries to DB.
+        SendAPI task2 = new SendAPI();
+        task2.execute(url2);
 
 
-
+        //Set the last updated date for the currency rate upon opening the currency exchange page.
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        dialogue3.setText("Last updated: " + formatter.format(date));
 
     }
 
 
+    //OnClick the flags rotate positions indication the transaction:
+    //USD --> LBP means sell USD to LBP.
+    //LBP --> USD means buy USD from LBP.
     public void OnClickSwitch(View view) {
-        ImageView country_flag_from = (ImageView) findViewById(R.id.coinIconFrom);
-        ImageView country_flag_to = (ImageView) findViewById(R.id.coinIconTo);
-
         country_flag_to.setVisibility(View.GONE);
+        country_flag_to.setVisibility(View.VISIBLE);
 
+        //Switch from USD to LBP into LBP to USD.
         if (flag_USA) {
             flag_USA = false;
             country_flag_from.setImageResource(R.drawable.lb_lebanon_flag_icon);
             country_flag_to.setImageResource(R.drawable.us_united_states_flag_icon);
-        } else {
+
+        }
+        //Switch from LBP to USD into USD to LBP.
+        else {
             flag_USA = true;
             country_flag_from.setImageResource(R.drawable.us_united_states_flag_icon);
             country_flag_to.setImageResource(R.drawable.lb_lebanon_flag_icon);
@@ -165,26 +226,21 @@ public class MainActivity2 extends AppCompatActivity {
 
 
     public void OnClickConvert(View view) {
-        EditText value_inputted = (EditText) findViewById(R.id.valueInput);
-        TextView result_value = (TextView) findViewById(R.id.resultValue);
-
-        //Universal Dialogue Box for information when both values might cause an error.
-        TextView dialogue3 = (TextView) findViewById(R.id.dialogBoxUniversal);
-
 
         try{
             //Convert from USD to LBP
             double result;
             DecimalFormat formatter = new DecimalFormat("#0.00");
             String currency;
-
+            double parsed_sell = Double.parseDouble(value_sell);
+            double parsed_buy = Double.parseDouble(value_buy);
             if (flag_USA) {
-                result = Double.parseDouble(value_inputted.getText().toString()) * 22000;
+                result = Double.parseDouble(value_inputted.getText().toString()) * parsed_sell;
                 currency = "\t\tL.L.";
             }
             //Convert from LBP to USD
             else{
-                result = Double.parseDouble(value_inputted.getText().toString()) / 22000;
+                result = Double.parseDouble(value_inputted.getText().toString()) / parsed_buy;
                 currency = "\t\tUSD";
             }
 
@@ -193,7 +249,7 @@ public class MainActivity2 extends AppCompatActivity {
             result_value.setText(formatted_result + currency);
         }
         catch(NumberFormatException e){
-            dialogue3.setText("Error in number formatting.");
+            Toast.makeText(getApplicationContext(), "Error in number formatting.", Toast.LENGTH_LONG).show();
         }
 
     }
