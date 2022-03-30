@@ -7,6 +7,26 @@
     tools:context=".MainActivity2">
 
 
+    <TextView
+        android:id="@+id/dialogBoxUniversal2"
+        android:layout_width="217dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="97dp"
+        android:layout_marginEnd="97dp"
+        android:layout_marginBottom="260dp"
+        android:fontFamily="@font/poppins_bold"
+        android:minHeight="40dp"
+        android:textAllCaps="true"
+        android:textColor="#FF5252"
+        android:textSize="12sp"
+        app:autoSizeTextType="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/converter"
+        app:layout_constraintVertical_bias="0.0" />
+
     <EditText
         android:id="@+id/valueInput"
         android:layout_width="216dp"
@@ -93,9 +113,9 @@
         android:layout_width="130dp"
         android:layout_height="48dp"
         android:layout_marginStart="140dp"
-        android:layout_marginTop="26dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="141dp"
-        android:layout_marginBottom="317dp"
+        android:layout_marginBottom="325dp"
         android:backgroundTint="#40CEEF"
         android:fontFamily="@font/poppins_bold"
         android:onClick="OnClickConvert"
@@ -106,8 +126,10 @@
         app:iconSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/resultValue" />
+        app:layout_constraintTop_toBottomOf="@+id/resultValue"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/switchCurrency"
@@ -145,16 +167,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/coinIconFrom"
-        app:layout_constraintVertical_bias="0.48000002" />
+        app:layout_constraintVertical_bias="0.52" />
 
     <TextView
         android:id="@+id/dialogBoxUniversal"
         android:layout_width="217dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="97dp"
-        android:layout_marginTop="13dp"
         android:layout_marginEnd="97dp"
-        android:layout_marginBottom="251dp"
+        android:layout_marginBottom="200dp"
         android:fontFamily="@font/poppins_bold"
         android:minHeight="48dp"
         android:textAllCaps="true"
@@ -163,8 +184,10 @@
         app:autoSizeTextType="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/converter" />
+        app:layout_constraintTop_toBottomOf="@+id/dialogBoxUniversal2"
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"

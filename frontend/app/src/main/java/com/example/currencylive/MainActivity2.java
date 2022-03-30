@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +33,7 @@ import java.text.DecimalFormat;
 import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity2 extends AppCompatActivity {
+
 
     //Strings to store API results.
     private String value_sell;
@@ -112,71 +114,7 @@ public class MainActivity2 extends AppCompatActivity {
                 int need_index2 =  (arr.size()-1);
                 value_buy = arr.get(need_index2).toString();
 
-            }
-
-
-            catch(Exception e){
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(), "Error in post execution.", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    private String db_buy;
-    private String db_sell;
-    private String db_result;
-
-    //Obtain information of buy and sell rate from the Database
-    public class CallFromDBAPI extends AsyncTask<String, Void, String> {
-        protected String doInBackground(String... urls){
-
-            //Variables to initiate connection.
-            URL url;
-            HttpsURLConnection https;
-
-            try{
-                //Establishing connection between application and API.
-                url = new URL(urls[0]);
-                https = (HttpsURLConnection) url.openConnection();
-
-                //InputStreams to obtain input from API.
-                InputStream in = https.getInputStream();
-
-                //Perform conversion function to obtain result as a string.
-                String newLine = System.getProperty("line.separator");
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(in));
-                StringBuilder result = new StringBuilder();
-                for (String line; (line = reader.readLine()) != null; ) {
-                    if (result.length() > 0) {
-                        result.append(newLine);
-                    }
-                    result.append(line);
-                }
-                db_result = result.toString();
-                return db_result;
-            }
-            catch(Exception e){
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(), "Error in receiving data.", Toast.LENGTH_LONG).show();
-
-                return null;
-            }
-
-        }
-
-        protected void onPostExecute(String s){
-            super.onPostExecute(s);
-
-            try{
-
-                //Convert JSON objects into Strings.
-                JSONObject json_obj = new JSONObject(s);
-                String rate_buy = json_obj.getString("rate_lbp_buy");
-                String rate_sell = json_obj.getString("rate_lbp_sell");
-
-                db_buy = rate_buy;
-                db_sell = rate_sell;
+                dialogue2.setText("Buy at: " + value_buy + "\t Sell at: " + value_sell);
 
             }
 
@@ -188,34 +126,65 @@ public class MainActivity2 extends AppCompatActivity {
         }
     }
 
-    /*
+    String value_user;
+
     public class CallSendDBAPI extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... urls) {
             //Variables to initiate connection.
             URL url;
-            HttpsURLConnection https;
+            HttpsURLConnection conn;
+
+            //Get Strings ready
+            if(!flag_USA){
+                currency = "LBP";
+            }
+
+            value_user = value_inputted.getText().toString();
+
+
 
             String urlString = urls[0]; // URL to call
-            String buy1 = urls[1]; //data buy to post
-            String sell1 = urls[2]; //data sell to post
-            OutputStream out = null;
+          //  String buy1 = urls[1]; //data buy to post
+           // String sell1 = urls[2]; //data sell to post
+          //  String currency1 = urls[3]; //data currency to post
+            //OutputStream out = null;
 
             try {
                 //Establishing connection between application and API.
                 url = new URL(urlString);
-                https = (HttpsURLConnection) url.openConnection();
-                out = new BufferedOutputStream(https.getOutputStream());
+                conn = (HttpsURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
 
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-                writer.write(buy1);
-                writer.write(sell1);
+                Uri.Builder builder = new Uri.Builder()
+                        .appendQueryParameter("buy", value_buy)
+                        .appendQueryParameter("sell", value_sell)
+                        .appendQueryParameter("currency", currency)
+                        .appendQueryParameter("amount", value_user);
+                String query = builder.build().getEncodedQuery();
+
+               // out = new BufferedOutputStream(conn.getOutputStream());
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(query);
                 writer.flush();
                 writer.close();
-                out.close();
+                os.close();
 
-                https.connect();
+
+
+               // BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+             //   writer.write(buy1);
+             //   writer.write(sell1);
+             //   writer.flush();
+            //    writer.close();
+             //   out.close();
+
+                conn.connect();
+
             } catch (Exception e) {
                Toast.makeText(getApplicationContext(), "Failed to send data to server.", Toast.LENGTH_LONG).show();
             }
@@ -223,52 +192,8 @@ public class MainActivity2 extends AppCompatActivity {
         }
     }
 
-     */
-
-    //Exchange initialized as USD-->LBP (sell).
-    boolean flag_USA = true;
 
 
-    ImageView country_flag_from;
-    ImageView country_flag_to;
-
-    EditText value_inputted;
-    TextView result_value;
-    TextView dialogue3;
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
-
-        country_flag_from = (ImageView) findViewById(R.id.coinIconFrom);
-        country_flag_to = (ImageView) findViewById(R.id.coinIconTo);
-
-        value_inputted = (EditText) findViewById(R.id.valueInput);
-        result_value = (TextView) findViewById(R.id.resultValue);
-
-        dialogue3 = (TextView) findViewById(R.id.dialogBoxUniversal);
-
-
-        //URL API to obtain buy and sell rates.
-        String url = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t202233013";
-
-        //URL API to send data to MySQL sever.
-        String url2 = "https://mcprojs.000webhostapp.com/backend/send_data.php";
-
-        //Perform obtaining buy and sell rate.
-        CallLiraAPI task = new CallLiraAPI();
-        task.execute(url);
-
-        //Perform to insert queries to DB.
-       // CallSendDBAPI task2 = new CallSendDBAPI();
-        //task2.execute(url2);
-
-
-        //Set the last updated date for the currency rate upon opening the currency exchange page.
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        Date date = new Date();
-        dialogue3.setText("Last updated: " + formatter.format(date));
-
-    }
 
 
     //OnClick the flags rotate positions indication the transaction:
@@ -296,32 +221,50 @@ public class MainActivity2 extends AppCompatActivity {
     }
 
 
+    //Exchange initialized as USD-->LBP (sell).
+    boolean flag_USA = true;
+    String currency = "USA";
+
+    ImageView country_flag_from;
+    ImageView country_flag_to;
+    EditText value_inputted;
+    TextView result_value;
+    TextView dialogue1;
+    TextView dialogue2;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main2);
+        country_flag_from = (ImageView) findViewById(R.id.coinIconFrom);
+        country_flag_to = (ImageView) findViewById(R.id.coinIconTo);
+
+        value_inputted = (EditText) findViewById(R.id.valueInput);
+        result_value = (TextView) findViewById(R.id.resultValue);
+
+        dialogue1 = (TextView) findViewById(R.id.dialogBoxUniversal);
+        dialogue2 = (TextView) findViewById(R.id.dialogBoxUniversal2);
+
+        //URL API to obtain buy and sell rates.
+        String url = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t202233013";
+
+        //Perform obtaining buy and sell rate.
+        CallLiraAPI task = new CallLiraAPI();
+        task.execute(url);
+
+        //Set the last updated date for the currency rate upon opening the currency exchange page.
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        dialogue1.setText("Last updated: " + formatter.format(date));
+
+    }
+
     public void OnClickConvert(View view) {
 
-        try{
-            //Convert from USD to LBP
-            double result;
-            DecimalFormat formatter = new DecimalFormat("#0.00");
-            String currency;
-            double parsed_sell = Double.parseDouble(value_sell);
-            double parsed_buy = Double.parseDouble(value_buy);
-            if (flag_USA) {
-                result = Double.parseDouble(value_inputted.getText().toString()) * parsed_sell;
-                currency = "\t\tL.L.";
-            }
-            //Convert from LBP to USD
-            else{
-                result = Double.parseDouble(value_inputted.getText().toString()) / parsed_buy;
-                currency = "\t\tUSD";
-            }
+        //URL API to send data to MySQL sever.
+        String url = "https://mcprojs.000webhostapp.com/backend/send_data.php";
 
-            String formatted_result = formatter.format(result);
-
-            result_value.setText(formatted_result + currency);
-        }
-        catch(NumberFormatException e){
-            Toast.makeText(getApplicationContext(), "Error in number formatting.", Toast.LENGTH_LONG).show();
-        }
+        //Perform to insert queries to DB.
+        CallSendDBAPI task2 = new CallSendDBAPI();
+        task2.execute(url);
 
     }
 }
