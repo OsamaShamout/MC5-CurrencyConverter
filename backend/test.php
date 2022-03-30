@@ -1,29 +1,30 @@
 <?php 
 
-//get database information
+//Get database information from db_info PHP file.
 include ("db_info.php");
 
-//prepare query to avoid SQL injections
+//Prepare query to avoid SQL injections
 $query = $mysqli->prepare("SELECT * FROM lira_rates;");
 
-//perform query
+//Perform query
 $query->execute();
 
-//store query in an array
+//Store query in an array
 $array = $query->get_result();
 
-//initalize an array
+//Initalize an array
 $response = [];
 
-//add for every row response array (an object lira rate into array)
+//Add for every row response array (an object lira rate into array)
 while($lira_rate = $array->fetch_assoc()){
-    //sav table
+    //Save table rows
     $response[] = $lira_rate;
 }
 
-
+//Encode the response into a JSON object.
 $json_response = json_encode($response);
  
+//Display the JSON Object resulted.
 echo $json_response;
 
 ?>
