@@ -36,9 +36,10 @@ public class MainActivity2 extends AppCompatActivity {
     //Strings to store API results.
     private String value_sell;
     private String value_buy;
+    private String result_lira_api;
 
     //Obtain information of buy and sell rate from lirarate.org
-    public class DownloadTask extends AsyncTask<String, Void, String> {
+    public class CallLiraAPI extends AsyncTask<String, Void, String> {
         protected String doInBackground(String... urls){
 
             //Variables to initiate connection.
@@ -64,7 +65,8 @@ public class MainActivity2 extends AppCompatActivity {
                     }
                     result.append(line);
                 }
-                return result.toString();
+                result_lira_api = result.toString();
+                return result_lira_api;
             }
             catch(Exception e){
                 e.printStackTrace();
@@ -120,7 +122,74 @@ public class MainActivity2 extends AppCompatActivity {
         }
     }
 
-    public class SendAPI extends AsyncTask<String, Void, String> {
+    private String db_buy;
+    private String db_sell;
+    private String db_result;
+
+    //Obtain information of buy and sell rate from the Database
+    public class CallFromDBAPI extends AsyncTask<String, Void, String> {
+        protected String doInBackground(String... urls){
+
+            //Variables to initiate connection.
+            URL url;
+            HttpsURLConnection https;
+
+            try{
+                //Establishing connection between application and API.
+                url = new URL(urls[0]);
+                https = (HttpsURLConnection) url.openConnection();
+
+                //InputStreams to obtain input from API.
+                InputStream in = https.getInputStream();
+
+                //Perform conversion function to obtain result as a string.
+                String newLine = System.getProperty("line.separator");
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(in));
+                StringBuilder result = new StringBuilder();
+                for (String line; (line = reader.readLine()) != null; ) {
+                    if (result.length() > 0) {
+                        result.append(newLine);
+                    }
+                    result.append(line);
+                }
+                db_result = result.toString();
+                return db_result;
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Error in receiving data.", Toast.LENGTH_LONG).show();
+
+                return null;
+            }
+
+        }
+
+        protected void onPostExecute(String s){
+            super.onPostExecute(s);
+
+            try{
+
+                //Convert JSON objects into Strings.
+                JSONObject json_obj = new JSONObject(s);
+                String rate_buy = json_obj.getString("rate_lbp_buy");
+                String rate_sell = json_obj.getString("rate_lbp_sell");
+
+                db_buy = rate_buy;
+                db_sell = rate_sell;
+
+            }
+
+
+            catch(Exception e){
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Error in post execution.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    /*
+    public class CallSendDBAPI extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... urls) {
@@ -154,6 +223,8 @@ public class MainActivity2 extends AppCompatActivity {
         }
     }
 
+     */
+
     //Exchange initialized as USD-->LBP (sell).
     boolean flag_USA = true;
 
@@ -184,12 +255,12 @@ public class MainActivity2 extends AppCompatActivity {
         String url2 = "https://mcprojs.000webhostapp.com/backend/send_data.php";
 
         //Perform obtaining buy and sell rate.
-        DownloadTask task = new DownloadTask();
+        CallLiraAPI task = new CallLiraAPI();
         task.execute(url);
 
         //Perform to insert queries to DB.
-        SendAPI task2 = new SendAPI();
-        task2.execute(url2);
+       // CallSendDBAPI task2 = new CallSendDBAPI();
+        //task2.execute(url2);
 
 
         //Set the last updated date for the currency rate upon opening the currency exchange page.
