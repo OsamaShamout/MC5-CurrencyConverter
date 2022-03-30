@@ -1,5 +1,7 @@
 <?php 
 
+//GETTING INFO
+
 //Get database information from db_info PHP file.
 include ("db_info.php");
 
