@@ -6,8 +6,8 @@
 include ("db_info.php");
 
 //Obtain values from frontend
-$rate_lbp_buy = $_POST["rate_lbp_buy"];
-$rate_lbp_sell = $_POST["rate_lbp_sell"];
+$rate_lbp_buy = $_POST["buy"];
+$rate_lbp_sell = $_POST["sell"];
 
 //Prepare query to insert into DB "?" to avoid SQL injections
 $query = $mysqli->prepare("INSERT INTO lira_rates (rate_lbp_buy, rate_lbp_sell) VALUES (?, ?);");
@@ -18,12 +18,5 @@ $query->bind_param("ss", $rate_lbp_buy, $rate_lbp_sell);
 //Perform query
 $query->execute();
 
-$response = [];
-
-$response["Status"] = "Mabrouk!";
-
-$json_response = json_encode($response);
-
-echo $json_response;
 
 ?>
