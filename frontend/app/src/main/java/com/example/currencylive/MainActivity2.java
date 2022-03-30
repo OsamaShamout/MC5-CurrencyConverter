@@ -2,17 +2,25 @@ package com.example.currencylive;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,6 +30,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.BufferedReader;
 
@@ -34,12 +53,17 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity2 extends AppCompatActivity {
 
+    private String buy11 = "1111";
+    private String sell11 = "111";
+    private String currency11 = "USD";
+    private String amount11 = "111";
 
     //Strings to store API results.
     private String value_sell;
     private String value_buy;
     private String result_lira_api;
 
+    /*
     //Obtain information of buy and sell rate from lirarate.org
     public class CallLiraAPI extends AsyncTask<String, Void, String> {
         protected String doInBackground(String... urls){
@@ -126,12 +150,28 @@ public class MainActivity2 extends AppCompatActivity {
         }
     }
 
+
+     */
+
     String value_user;
 
-    public class CallSendDBAPI extends AsyncTask<String, Void, String> {
+    public class PostDataAsyncTask extends AsyncTask<String, String, String> {
 
         @Override
-        protected String doInBackground(String... urls) {
+        protected String doInBackground(String... strings) {
+            try {
+
+                postText();
+
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        private void postText(){
+            try{
             //Variables to initiate connection.
             URL url;
             HttpsURLConnection conn;
@@ -143,56 +183,45 @@ public class MainActivity2 extends AppCompatActivity {
 
             value_user = value_inputted.getText().toString();
 
+            String urlString = "https://mcprojs.000webhostapp.com/backend/send_data.php"; // URL to call
 
 
-            String urlString = urls[0]; // URL to call
-          //  String buy1 = urls[1]; //data buy to post
-           // String sell1 = urls[2]; //data sell to post
-          //  String currency1 = urls[3]; //data currency to post
-            //OutputStream out = null;
-
-            try {
                 //Establishing connection between application and API.
-                url = new URL(urlString);
-                conn = (HttpsURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
+               // url = new URL(urlString);
 
-                Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("buy", value_buy)
-                        .appendQueryParameter("sell", value_sell)
-                        .appendQueryParameter("currency", currency)
-                        .appendQueryParameter("amount", value_user);
-                String query = builder.build().getEncodedQuery();
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpPost httpPost = new HttpPost(urlString);
+                HttpResponse response;
 
-               // out = new BufferedOutputStream(conn.getOutputStream());
+             // add your data
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+                nameValuePairs.add(new BasicNameValuePair("buy", buy11));
+                nameValuePairs.add(new BasicNameValuePair("sell", sell11));
+                nameValuePairs.add(new BasicNameValuePair("currency", currency11));
+                nameValuePairs.add(new BasicNameValuePair("amount", amount11));
 
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-                writer.write(query);
-                writer.flush();
-                writer.close();
-                os.close();
+                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                // execute HTTP post request
+                response = httpClient.execute(httpPost);
+                HttpEntity resEntity = response.getEntity();
+
+                if (resEntity != null) {
+
+                    String responseStr = EntityUtils.toString(resEntity).trim();
+                    Log.v("Response: ", responseStr);
+
+                    // you can add an if statement here and do other actions based on the response
+                }
 
 
 
-               // BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-             //   writer.write(buy1);
-             //   writer.write(sell1);
-             //   writer.flush();
-            //    writer.close();
-             //   out.close();
-
-                conn.connect();
 
             } catch (Exception e) {
                Toast.makeText(getApplicationContext(), "Failed to send data to server.", Toast.LENGTH_LONG).show();
             }
-            return "";
         }
     }
-
-
 
 
 
@@ -202,6 +231,8 @@ public class MainActivity2 extends AppCompatActivity {
     public void OnClickSwitch(View view) {
         country_flag_to.setVisibility(View.GONE);
         country_flag_to.setVisibility(View.VISIBLE);
+
+
 
         //Switch from USD to LBP into LBP to USD.
         if (flag_USA) {
@@ -247,8 +278,8 @@ public class MainActivity2 extends AppCompatActivity {
         String url = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t202233013";
 
         //Perform obtaining buy and sell rate.
-        CallLiraAPI task = new CallLiraAPI();
-        task.execute(url);
+        //CallLiraAPI task = new CallLiraAPI();
+      //  task.execute(url);
 
         //Set the last updated date for the currency rate upon opening the currency exchange page.
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -258,13 +289,20 @@ public class MainActivity2 extends AppCompatActivity {
     }
 
     public void OnClickConvert(View view) {
-
+        new PostDataAsyncTask().execute();
         //URL API to send data to MySQL sever.
         String url = "https://mcprojs.000webhostapp.com/backend/send_data.php";
 
         //Perform to insert queries to DB.
-        CallSendDBAPI task2 = new CallSendDBAPI();
-        task2.execute(url);
+        //CallSendDBAPI task2 = new CallSendDBAPI();
+       // task2.execute(url);
+
+        value_user = value_inputted.getText().toString();
+
+        if(!flag_USA){
+                currency = "LBP";
+            }
+
 
     }
 }
