@@ -5,6 +5,7 @@
 //Get database information from db_info PHP file.
 include ("db_info.php");
 
+curl
 //Prepare query to avoid SQL injections
 $query = $mysqli->prepare("SELECT * FROM lira_rates;");
 

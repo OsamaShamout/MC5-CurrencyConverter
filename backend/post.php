@@ -8,7 +8,6 @@ include ("db_info.php");
 //Obtain values from frontend
 $rate_lbp_buy = $_POST["rate_lbp_buy"];
 $rate_lbp_sell = $_POST["rate_lbp_sell"];
-//$current_time_stamp = current_timestamp();
 
 //Prepare query to insert into DB "?" to avoid SQL injections
 $query = $mysqli->prepare("INSERT INTO lira_rates (rate_lbp_buy, rate_lbp_sell) VALUES (?, ?);");
