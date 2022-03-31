@@ -1,6 +1,6 @@
 <?php
 
-//THIS PHP FILE IS RESPONSIBLE FOR SENDING DATA INFO MYSQL DB.
+//THIS PHP FILE IS RESPONSIBLE FOR SENDING DATA INFO INTO MYSQL DB.
 
 //Get database information from db_config PHP file.
 include ("db_config.php");
