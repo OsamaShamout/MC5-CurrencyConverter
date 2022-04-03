@@ -10,32 +10,25 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
 import java.util.Iterator;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.net.ssl.HttpsURLConnection;
 
 
@@ -80,7 +73,6 @@ public class MainActivity2 extends AppCompatActivity {
             catch(Exception e){
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(), "Error in receiving data.", Toast.LENGTH_LONG).show();
-
                 return null;
             }
 
@@ -124,9 +116,6 @@ public class MainActivity2 extends AppCompatActivity {
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 Date date = new Date();
                 dialogue1.append("\nLast updated: " + formatter.format(date));
-
-
-
             }
 
             catch(Exception e){
@@ -141,8 +130,6 @@ public class MainActivity2 extends AppCompatActivity {
     String result_db1;
     public class CallSendDBAPI extends AsyncTask<String, Void, String> {
         protected String doInBackground(String... urls){
-
-            result_processing = true;
 
             //Variables to initiate connection.
             URL url;
@@ -162,18 +149,18 @@ public class MainActivity2 extends AppCompatActivity {
 
                 conn.connect();
 
+                //Creating new JSON object to communicate with it to DB.
                 JSONObject jo = new JSONObject();
                 StringBuffer packedData=new StringBuffer();
                 value_user = value_inputted.getText().toString();
 
-                String rate_buyy = "24000";
-                String rate_selll = "23000";
-
-                jo.put("buy", rate_buyy);
-                jo.put("sell", rate_selll);
+                //Send the variables to their respective $_POST.
+                jo.put("buy", value_buy);
+                jo.put("sell", value_sell);
                 jo.put("currency", currency);
                 jo.put("amount", value_user);
 
+                //Pack data to be processed by PHP for $_POST.
                 boolean firstValue=true;
 
                 Iterator it=jo.keys();
@@ -196,8 +183,10 @@ public class MainActivity2 extends AppCompatActivity {
 
                 }while (it.hasNext());
 
+                //Log in console to track. "e" used as color red will appear more significantly while reading log.
                 Log.e("Packed data:", packedData.toString());
 
+                //Write to PHP file.
                 OutputStream os=conn.getOutputStream();
                 BufferedWriter wr=new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
 
@@ -221,6 +210,7 @@ public class MainActivity2 extends AppCompatActivity {
                 }
                 result_db1 = result.toString();
 
+                //Log server return.
                 Log.e("test", "result from server: " + result_db1);
 
             } catch (IOException e) {
@@ -279,7 +269,6 @@ public class MainActivity2 extends AppCompatActivity {
             catch(Exception e){
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(), "Error in receiving data.", Toast.LENGTH_LONG).show();
-
                 return null;
             }
         }
@@ -338,8 +327,8 @@ public class MainActivity2 extends AppCompatActivity {
         String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t20224316";
 
         //Perform obtaining buy and sell rate.
-        // CallLiraAPI task1 = new CallLiraAPI();
-        // task1.execute(url1);
+        CallLiraAPI task1 = new CallLiraAPI();
+        task1.execute(url1);
     }
 
 
