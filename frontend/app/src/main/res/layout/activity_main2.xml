@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F6F6F6"
     tools:context=".MainActivity2">
 
 
@@ -36,8 +37,8 @@
         android:layout_marginEnd="98dp"
         android:layout_marginBottom="10dp"
         android:fontFamily="@font/poppins_bold"
-        android:inputType="numberDecimal"
         android:hint="Enter Value"
+        android:inputType="numberDecimal"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/coinIconFrom"
         app:layout_constraintEnd_toEndOf="parent"
@@ -187,5 +188,25 @@
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/moneymoving"
         app:lottie_url="REPLACE_JSON_URL" />
+
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="81dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="13dp"
+        android:layout_marginBottom="643dp"
+        android:backgroundTint="#F6F6F6"
+        android:contentDescription="back button"
+        android:onClick="OnClickBackButton"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/amountText"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/left_arrow" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

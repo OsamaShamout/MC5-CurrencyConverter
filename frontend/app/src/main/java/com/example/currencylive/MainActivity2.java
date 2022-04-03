@@ -2,6 +2,7 @@ package com.example.currencylive;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -400,5 +401,11 @@ public class MainActivity2 extends AppCompatActivity {
         //Retrieve information from DB and return result to user.
         CallDBAPI task3 = new CallDBAPI();
         task3.execute(url3);
+    }
+
+    //Back to main menu
+    public void OnClickBackButton(View view){
+        Intent intent = new Intent(this,MainActivity.class);
+        startActivity(intent);
     }
 }
