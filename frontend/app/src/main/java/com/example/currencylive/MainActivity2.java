@@ -292,11 +292,11 @@ public class MainActivity2 extends AppCompatActivity {
                 String currency = jsonObject.getString("currency");
                 String amount_db = jsonObject.getString("amount_result");
 
-                if(currency == "USD"){
-                    result_value.setText(amount_db + "\t" + "LBP");
+                if(flag_USA){
+                    result_value.setText(amount_db + "\t\tLBP");
                 }
-                else if(currency == "LBP"){
-                    result_value.setText(amount_db + "\t" + "USD");
+                else{
+                    result_value.setText(amount_db + "\t\tUSD");
                 }
 
             }
@@ -347,6 +347,7 @@ public class MainActivity2 extends AppCompatActivity {
         //Switch from USD to LBP into LBP to USD.
         if (flag_USA) {
             flag_USA = false;
+            currency = "LBP";
             country_flag_from.setImageResource(R.drawable.lb_lebanon_flag_icon);
             country_flag_to.setImageResource(R.drawable.us_united_states_flag_icon);
 
@@ -354,6 +355,7 @@ public class MainActivity2 extends AppCompatActivity {
         //Switch from LBP to USD into USD to LBP.
         else {
             flag_USA = true;
+            currency = "USD";
             country_flag_from.setImageResource(R.drawable.us_united_states_flag_icon);
             country_flag_to.setImageResource(R.drawable.lb_lebanon_flag_icon);
         }

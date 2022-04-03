@@ -27,7 +27,7 @@ while($lira_rate = $array->fetch_assoc()){
 //Encode the response into a JSON object.
 $json_response = json_encode($response);
  
-//Display the JSON Object resulted.
+//Display the JSON Object resulted. (Testing)
 echo $json_response;
 
 ?>
