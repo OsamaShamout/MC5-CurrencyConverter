@@ -392,7 +392,7 @@ public class MainActivity2 extends AppCompatActivity {
         
         String url3 = "https://mcprojs.000webhostapp.com/backend/get_data.php";
 
-        Toast.makeText(getApplicationContext(), "Please wait.", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Please wait.", Toast.LENGTH_SHORT).show();
 
         //Perform to insert queries to DB.
         CallSendDBAPI task2 = new CallSendDBAPI();
