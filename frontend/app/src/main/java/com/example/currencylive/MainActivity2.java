@@ -342,10 +342,6 @@ public class MainActivity2 extends AppCompatActivity {
         CallLiraAPI task1 = new CallLiraAPI();
         task1.execute(url1);
 
-        DateFormat df = new SimpleDateFormat("dd MM yyyy, HH:mm");
-        String dateToday = df.format(Calendar.getInstance().getTime());
-
-        Log.e("Date is: : ", dateToday);
 
         //Display current rate for user.
         //Wait until process gets the buy and sell value.
@@ -353,8 +349,7 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void run() {
                 if (value_buy != null) {
-                    dialogue1.setText("Buy at:  " + value_buy + "\t Sell at:  " + value_sell +  "\nLast updated: " + dateToday
-                    );
+                    dialogue1.setText("Buy at:  " + value_buy + "\t Sell at:  " + value_sell);
                     return;
                 }
 
