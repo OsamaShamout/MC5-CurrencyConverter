@@ -23,7 +23,9 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -95,8 +97,9 @@ public class MainActivity2 extends AppCompatActivity {
                 String rate_sell = json_obj.getString("sell");
                 String rate_buy = json_obj.getString("buy");
 
-                //Prepare the regex expression to extract the conversion rate
-                Pattern p = Pattern.compile("1649\\d\\d\\d\\d\\d\\d\\d\\d\\d,(\\d\\d\\d\\d\\d)", Pattern.MULTILINE);
+                //Prepare the regex expression to extract the conversion rate //? in case the rate becomes
+                //above 5 digits (Let's hope it won't).
+                Pattern p = Pattern.compile("1649\\d\\d\\d\\d\\d\\d\\d\\d\\d,(\\d\\d\\d\\d\\d\\d?)", Pattern.MULTILINE);
                 Matcher m1 = p.matcher(rate_sell);
                 Matcher m2 = p.matcher(rate_buy);
 
@@ -123,22 +126,6 @@ public class MainActivity2 extends AppCompatActivity {
 
                 //Log server return.
                 Log.e("test", "result splitting2 " + value_buy);
-
-
-                //Display current rate for user.
-                //Wait until process gets the buy and sell value.
-                new Timer().scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (value_buy != null) {
-                            dialogue1.setText("Buy at: " + value_buy + "\t Sell at: " + value_sell);
-
-                            //Display the update date of the current displayed conversion rate.
-                            Calendar c = Calendar.getInstance();
-                            dialogue1.append("\nLast updated: " + "c.toString()");
-                        }
-                    }
-                }, 0, 3000);
 
             }
 
@@ -355,6 +342,25 @@ public class MainActivity2 extends AppCompatActivity {
         CallLiraAPI task1 = new CallLiraAPI();
         task1.execute(url1);
 
+        DateFormat df = new SimpleDateFormat("dd MM yyyy, HH:mm");
+        String dateToday = df.format(Calendar.getInstance().getTime());
+
+        Log.e("Date is: : ", dateToday);
+
+        //Display current rate for user.
+        //Wait until process gets the buy and sell value.
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (value_buy != null) {
+                    dialogue1.setText("Buy at:  " + value_buy + "\t Sell at:  " + value_sell +  "\nLast updated: " + dateToday
+                    );
+                    return;
+                }
+
+
+            }
+        }, 0, 500);
 
     }
 
