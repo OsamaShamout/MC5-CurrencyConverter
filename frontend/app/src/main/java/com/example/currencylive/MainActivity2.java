@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -16,31 +15,28 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import java.io.IOException;
 
 public class MainActivity2 extends AppCompatActivity {
 
@@ -164,12 +160,8 @@ public class MainActivity2 extends AppCompatActivity {
                 StringBuffer packedData=new StringBuffer();
                 value_user = value_inputted.getText().toString();
 
-                if(!flag_USA){
-                    currency = "LBP";
-                }
-
-                String rate_buyy = "244400";
-                String rate_selll = "244400";
+                String rate_buyy = "24000";
+                String rate_selll = "23000";
 
                 jo.put("buy", rate_buyy);
                 jo.put("sell", rate_selll);
@@ -300,7 +292,13 @@ public class MainActivity2 extends AppCompatActivity {
                 String currency = jsonObject.getString("currency");
                 String amount_db = jsonObject.getString("amount_result");
 
-                result_value.setText(amount_db + "\t" + currency);
+                if(currency == "USD"){
+                    result_value.setText(amount_db + "\t" + "LBP");
+                }
+                else if(currency == "LBP"){
+                    result_value.setText(amount_db + "\t" + "USD");
+                }
+
             }
 
             catch(Exception e){
@@ -312,8 +310,7 @@ public class MainActivity2 extends AppCompatActivity {
 
     //Exchange initialized as USD-->LBP (sell).
     boolean flag_USA = true;
-    String currency = "USA";
-
+    String currency ="USD";
     ImageView country_flag_from;
     ImageView country_flag_to;
     EditText value_inputted;
