@@ -26,6 +26,7 @@ import java.io.OutputStreamWriter;
 
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,6 +46,7 @@ public class MainActivity2 extends AppCompatActivity {
     private String value_sell;
     private String value_buy;
     private String result_lira_api;
+
 
     public class CallLiraAPI extends AsyncTask<String, Void, String> {
         protected String doInBackground(String... urls){
@@ -123,6 +125,8 @@ public class MainActivity2 extends AppCompatActivity {
                 Date date = new Date();
                 dialogue1.append("\nLast updated: " + formatter.format(date));
 
+
+
             }
 
             catch(Exception e){
@@ -138,6 +142,8 @@ public class MainActivity2 extends AppCompatActivity {
     public class CallSendDBAPI extends AsyncTask<String, Void, String> {
         protected String doInBackground(String... urls){
 
+            result_processing = true;
+
             //Variables to initiate connection.
             URL url;
             HttpsURLConnection conn;
@@ -149,7 +155,7 @@ public class MainActivity2 extends AppCompatActivity {
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
                 conn.setRequestMethod("POST");
-                //conn.setRequestProperty("Accept-Charset", "UTF-8");
+                conn.setRequestProperty("Accept-Charset", "UTF-8");
 
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
@@ -168,7 +174,7 @@ public class MainActivity2 extends AppCompatActivity {
                 jo.put("currency", currency);
                 jo.put("amount", value_user);
 
-                Boolean firstValue=true;
+                boolean firstValue=true;
 
                 Iterator it=jo.keys();
 
@@ -190,11 +196,11 @@ public class MainActivity2 extends AppCompatActivity {
 
                 }while (it.hasNext());
 
-                Log.e("Pack data:", packedData.toString());
+                Log.e("Packed data:", packedData.toString());
 
                 OutputStream os=conn.getOutputStream();
-                BufferedWriter wr=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
-                //DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+                BufferedWriter wr=new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
+
                 wr.write(packedData.toString());
                 wr.flush();
                 wr.close();
@@ -202,7 +208,7 @@ public class MainActivity2 extends AppCompatActivity {
                 //InputStreams to obtain input from API.
                 InputStream in = conn.getInputStream();
 
-                //Perform conversion function to obtain result as a string.
+                //Obtain server return result as a string.
                 String newLine = System.getProperty("line.separator");
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(in));
@@ -227,7 +233,6 @@ public class MainActivity2 extends AppCompatActivity {
 
         protected void onPostExecute(String s){
             super.onPostExecute(s);
-
             try{
 
             }
@@ -241,9 +246,9 @@ public class MainActivity2 extends AppCompatActivity {
 
     //Obtain information conversion and data from the DB.
     private String result_db;
+    private String amount_db;
     public class CallDBAPI extends AsyncTask<String, Void, String> {
         protected String doInBackground(String... urls){
-
             //Variables to initiate connection.
             URL url;
             HttpsURLConnection https;
@@ -277,28 +282,30 @@ public class MainActivity2 extends AppCompatActivity {
 
                 return null;
             }
-
         }
 
         protected void onPostExecute(String s){
             super.onPostExecute(s);
 
             try{
-
                 //Convert JSON objects into Strings.
                 JSONArray json_arr = new JSONArray(s);
 
                 JSONObject jsonObject = json_arr.getJSONObject(0);
-                String currency = jsonObject.getString("currency");
-                String amount_db = jsonObject.getString("amount_result");
+                amount_db = jsonObject.getString("amount_result");
 
+                //To format value.
+                float value = Float.parseFloat(amount_db);
+
+                Toast.makeText(getApplicationContext(), "Done.", Toast.LENGTH_SHORT).show();
+
+                //Display to user the value.
                 if(flag_USA){
-                    result_value.setText(amount_db + "\t\tLBP");
+                    result_value.setText(String.format("%.2f", value) + "\t\tLBP");
                 }
-                else{
-                    result_value.setText(amount_db + "\t\tUSD");
+                else {
+                    result_value.setText(String.format("%.2f", value) + "\t\tUSD");
                 }
-
             }
 
             catch(Exception e){
@@ -333,7 +340,6 @@ public class MainActivity2 extends AppCompatActivity {
         //Perform obtaining buy and sell rate.
         // CallLiraAPI task1 = new CallLiraAPI();
         // task1.execute(url1);
-
     }
 
 
@@ -350,7 +356,6 @@ public class MainActivity2 extends AppCompatActivity {
             currency = "LBP";
             country_flag_from.setImageResource(R.drawable.lb_lebanon_flag_icon);
             country_flag_to.setImageResource(R.drawable.us_united_states_flag_icon);
-
         }
         //Switch from LBP to USD into USD to LBP.
         else {
@@ -359,15 +364,17 @@ public class MainActivity2 extends AppCompatActivity {
             country_flag_from.setImageResource(R.drawable.us_united_states_flag_icon);
             country_flag_to.setImageResource(R.drawable.lb_lebanon_flag_icon);
         }
-
     }
 
-
+    boolean result_processing = false;
     public void OnClickConvert(View view) throws IOException {
+
         //URL API to send data to MySQL sever.
         String url2 = "https://mcprojs.000webhostapp.com/backend/send_data.php";
         
         String url3 = "https://mcprojs.000webhostapp.com/backend/get_data.php";
+
+        Toast.makeText(getApplicationContext(), "Please wait.", Toast.LENGTH_LONG).show();
 
         //Perform to insert queries to DB.
         CallSendDBAPI task2 = new CallSendDBAPI();
@@ -376,7 +383,5 @@ public class MainActivity2 extends AppCompatActivity {
         //Retrieve information from DB and return result to user.
         CallDBAPI task3 = new CallDBAPI();
         task3.execute(url3);
-
-
     }
 }
