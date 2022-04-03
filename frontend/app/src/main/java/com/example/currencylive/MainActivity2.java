@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -11,35 +12,37 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import java.io.IOException;
+
 public class MainActivity2 extends AppCompatActivity {
-
-
-
 
     //Obtain information of buy and sell rate from lirarate.org
     //Strings to store API results.
@@ -132,75 +135,167 @@ public class MainActivity2 extends AppCompatActivity {
             }
         }
     }
-//
-//    //Send data to DB.
-//    String value_user;
-//
-//    public class CallSendDBAPI extends AsyncTask<String, String, String> {
-//
-//        @Override
-//        protected String doInBackground(String... strings) {
-//            try {
-//
-//                postText();
-//
-//            } catch (NullPointerException e) {
-//                e.printStackTrace();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            return null;
-//        }
-//        private void postText(){
-//            try{
-//            //Variables to initiate connection.
-//            URL url;
-//            HttpsURLConnection conn;
-//
-//            //Get Strings ready
-//            if(!flag_USA){
-//                currency = "LBP";
-//            }
-//
-//            value_user = value_inputted.getText().toString();
-//
-//            String urlString = "https://mcprojs.000webhostapp.com/backend/send_data.php"; // URL to call
-//
-//
-//                //Establishing connection between application and API.
-//                //url = new URL(urlString);
-//
-//                HttpClient httpClient = new DefaultHttpClient();
-//                HttpPost httpPost = new HttpPost(urlString);
-//                HttpResponse response;
-//
-//                //add data
-//                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-//                nameValuePairs.add(new BasicNameValuePair("buy", "buy11"));
-//                nameValuePairs.add(new BasicNameValuePair("sell", "sell11"));
-//                nameValuePairs.add(new BasicNameValuePair("currency", "currency11"));
-//                nameValuePairs.add(new BasicNameValuePair("amount", "amount11"));
-//
-//                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//
-//                // execute HTTP post request
-//                response = httpClient.execute(httpPost);
-//                HttpEntity resEntity = response.getEntity();
-//
-//                if (resEntity != null) {
-//
-//                    String responseStr = EntityUtils.toString(resEntity).trim();
-//                    Log.e("Response: ", responseStr);
-//
-//                }
-//
-//
-//            } catch (Exception e) {
-//               Toast.makeText(getApplicationContext(), "Failed to send data to server.", Toast.LENGTH_LONG).show();
-//            }
-//        }
-//    }
+    public class DataPackager {
 
+        String name, position, team;
+
+        /*
+        SECTION 1.RECEIVE ALL DATA WE WANNA SEND
+         */
+        public DataPackager(String name, String position, String team) {
+            this.name = name;
+            this.position = position;
+            this.team = team;
+        }
+
+        /*
+       SECTION 2
+       1.PACK THEM INTO A JSON OBJECT
+       1. READ ALL THIS DATA AND ENCODE IT INTO A FROMAT THAT CAN BE SENT VIA NETWORK
+        */
+        public String packData() {
+            JSONObject jo = new JSONObject();
+            StringBuffer packedData = new StringBuffer();
+
+            try {
+                jo.put("Name", name);
+                jo.put("Position", position);
+                jo.put("Team", team);
+
+                Boolean firstValue = true;
+
+                Iterator it = jo.keys();
+
+                do {
+                    String key = it.next().toString();
+                    String value = jo.get(key).toString();
+
+                    if (firstValue) {
+                        firstValue = false;
+                    } else {
+                        packedData.append("&");
+                    }
+
+                    packedData.append(URLEncoder.encode(key, "UTF-8"));
+                    packedData.append("=");
+                    packedData.append(URLEncoder.encode(value, "UTF-8"));
+
+                } while (it.hasNext());
+
+                return packedData.toString();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
+    //Send data to DB.
+    String value_user;
+    String result_db1;
+    public class CallSendDBAPI extends AsyncTask<String, Void, String> {
+        protected String doInBackground(String... urls){
+
+            //Variables to initiate connection.
+            URL url;
+            HttpsURLConnection conn;
+
+            try{
+                //Establishing connection between application and API.
+                url = new URL(urls[0]);
+                conn = (HttpsURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+                conn.setRequestMethod("POST");
+                //conn.setRequestProperty("Accept-Charset", "UTF-8");
+
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+
+                conn.connect();
+
+                JSONObject jo = new JSONObject();
+                StringBuffer packedData=new StringBuffer();
+                value_user = value_inputted.getText().toString();
+
+                String trial = "2392439234";
+                jo.put("buy", trial);
+                jo.put("sell", trial);
+                jo.put("currency", trial);
+                jo.put("amount", value_user);
+
+                Boolean firstValue=true;
+
+                Iterator it=jo.keys();
+
+                do {
+                    String key=it.next().toString();
+                    String value=jo.get(key).toString();
+
+                    if(firstValue)
+                    {
+                        firstValue=false;
+                    }else
+                    {
+                        packedData.append("&");
+                    }
+
+                    packedData.append(URLEncoder.encode(key,"UTF-8"));
+                    packedData.append("=");
+                    packedData.append(URLEncoder.encode(value,"UTF-8"));
+
+                }while (it.hasNext());
+
+
+                OutputStream os=conn.getOutputStream();
+                BufferedWriter wr=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+                //DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+                wr.write(packedData.toString());
+                wr.flush();
+                wr.close();
+
+                //InputStreams to obtain input from API.
+                InputStream in = conn.getInputStream();
+
+                //Perform conversion function to obtain result as a string.
+                String newLine = System.getProperty("line.separator");
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(in));
+                StringBuilder result = new StringBuilder();
+                for (String line; (line = reader.readLine()) != null; ) {
+                    if (result.length() > 0) {
+                        result.append(newLine);
+                    }
+                    result.append(line);
+                }
+                result_db1 = result.toString();
+
+                Log.e("test", "result from server: " + result_db1);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+            }
+
+        protected void onPostExecute(String s){
+            super.onPostExecute(s);
+
+            try{
+
+            }
+
+            catch(Exception e){
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Error in post execution.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 
     //Obtain information conversion and data from the DB.
     private String result_db;
@@ -286,11 +381,11 @@ public class MainActivity2 extends AppCompatActivity {
         dialogue1 = (TextView) findViewById(R.id.dialogBoxUniversal1);
 
         //URL API to obtain buy and sell rates.
-        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t202233013";
+        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t20224316";
 
         //Perform obtaining buy and sell rate.
-        CallLiraAPI task1 = new CallLiraAPI();
-        task1.execute(url1);
+       // CallLiraAPI task1 = new CallLiraAPI();
+       // task1.execute(url1);
 
     }
 
@@ -318,25 +413,20 @@ public class MainActivity2 extends AppCompatActivity {
 
     }
 
-    public void OnClickConvert(View view) {
+
+    public void OnClickConvert(View view) throws IOException {
         //URL API to send data to MySQL sever.
         String url2 = "https://mcprojs.000webhostapp.com/backend/send_data.php";
         
         String url3 = "https://mcprojs.000webhostapp.com/backend/get_data.php";
 
         //Perform to insert queries to DB.
-        //CallSendDBAPI task2 = new CallSendDBAPI();
-        //task2.execute(url2);
-
-        //value_user = value_inputted.getText().toString();
-
-        if(!flag_USA){
-                currency = "LBP";
-            }
+        CallSendDBAPI task2 = new CallSendDBAPI();
+        task2.execute(url2);
 
         //Retrieve information from DB and return result to user.
         CallDBAPI task3 = new CallDBAPI();
-        task3.execute(url2);
+        task3.execute(url3);
 
 
     }
