@@ -25,8 +25,12 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.net.ssl.HttpsURLConnection;
@@ -68,6 +72,9 @@ public class MainActivity2 extends AppCompatActivity {
                     result.append(line);
                 }
                 result_lira_api = result.toString();
+
+                //Log server return.
+                Log.e("test", "result from lira api: " + result_lira_api);
                 return result_lira_api;
             }
             catch(Exception e){
@@ -89,33 +96,50 @@ public class MainActivity2 extends AppCompatActivity {
                 String rate_buy = json_obj.getString("buy");
 
                 //Prepare the regex expression to extract the conversion rate
-                Pattern p = Pattern.compile("1648\\d\\d\\d\\d\\d\\d\\d\\d\\d,(\\d\\d\\d\\d\\d)", Pattern.MULTILINE);
+                Pattern p = Pattern.compile("1649\\d\\d\\d\\d\\d\\d\\d\\d\\d,(\\d\\d\\d\\d\\d)", Pattern.MULTILINE);
                 Matcher m1 = p.matcher(rate_sell);
                 Matcher m2 = p.matcher(rate_buy);
 
-                //Create an ArrayList to append the buy and sell rates upon finding a match from the parsed string.
-                ArrayList<String> arr = new ArrayList<>();
+                //Create a stack to push the buy and sell rates upon finding a match from the parsed string.
+                Stack<String> stack = new Stack<String>();
                 //Keep finding the matches of the regex expression above and append
                 while(m1.find()){
-                    arr.add(m1.group(1));
+                    stack.push(m1.group(1));
                 }
-                int need_index =  (arr.size()-1);
-                value_sell = arr.get(need_index);
+
+                //Pop (last) element (Last sell value).
+                value_sell = stack.pop();
+
+                //Log server return.
+                Log.e("test", "result splitting1 " + value_sell);
 
                 //Keep finding the matches of the regex expression above and append
                 while(m2.find()){
-                    arr.add(m2.group(1));
+                    stack.push(m2.group(1));
                 }
-                int need_index2 =  (arr.size()-1);
-                value_buy = arr.get(need_index2);
+
+                //Pop last element (Last buy value).
+                value_buy = stack.pop();
+
+                //Log server return.
+                Log.e("test", "result splitting2 " + value_buy);
+
 
                 //Display current rate for user.
-                dialogue1.setText("Buy at: " + value_buy + "\t Sell at: " + value_sell);
+                //Wait until process gets the buy and sell value.
+                new Timer().scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (value_buy != null) {
+                            dialogue1.setText("Buy at: " + value_buy + "\t Sell at: " + value_sell);
 
-                //Display the update date of the current displayed conversion rate.
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                Date date = new Date();
-                dialogue1.append("\nLast updated: " + formatter.format(date));
+                            //Display the update date of the current displayed conversion rate.
+                            Calendar c = Calendar.getInstance();
+                            dialogue1.append("\nLast updated: " + "c.toString()");
+                        }
+                    }
+                }, 0, 3000);
+
             }
 
             catch(Exception e){
@@ -315,6 +339,7 @@ public class MainActivity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+
         country_flag_from = (ImageView) findViewById(R.id.coinIconFrom);
         country_flag_to = (ImageView) findViewById(R.id.coinIconTo);
 
@@ -329,6 +354,8 @@ public class MainActivity2 extends AppCompatActivity {
         //Perform obtaining buy and sell rate.
         CallLiraAPI task1 = new CallLiraAPI();
         task1.execute(url1);
+
+
     }
 
 
