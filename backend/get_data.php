@@ -1,6 +1,6 @@
 <?php 
 
-//GETTING INFO
+//GETTING INFO FROM DB
 
 //Get database information from db_info PHP file.
 include ("db_config.php");
