@@ -14,8 +14,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="97dp"
         android:layout_marginEnd="97dp"
-        android:layout_marginBottom="260dp"
+        android:layout_marginBottom="270dp"
         android:fontFamily="@font/poppins_bold"
+        android:gravity="center"
         android:minHeight="40dp"
         android:textAllCaps="true"
         android:textColor="#FF5252"
@@ -26,7 +27,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/converter"
-        app:layout_constraintVertical_bias="0.56" />
+        app:layout_constraintVertical_bias="0.19999999" />
 
     <EditText
         android:id="@+id/valueInput"
