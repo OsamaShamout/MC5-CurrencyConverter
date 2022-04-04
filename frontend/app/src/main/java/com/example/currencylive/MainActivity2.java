@@ -337,7 +337,7 @@ public class MainActivity2 extends AppCompatActivity {
         dialogue1 = (TextView) findViewById(R.id.dialogBoxUniversal1);
 
         //URL API to obtain buy and sell rates.
-        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t2022442";
+        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t20224417";
 
         //Perform obtaining buy and sell rate.
         CallLiraAPI task1 = new CallLiraAPI();
