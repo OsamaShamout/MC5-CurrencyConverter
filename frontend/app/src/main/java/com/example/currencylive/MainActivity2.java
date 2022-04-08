@@ -325,6 +325,9 @@ public class MainActivity2 extends AppCompatActivity {
     EditText value_inputted;
     TextView result_value;
     TextView dialogue1;
+    int year;
+    int month;
+    int day;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
@@ -339,12 +342,23 @@ public class MainActivity2 extends AppCompatActivity {
 
         //URL API to obtain buy and sell rates.
 
+        Calendar date = Calendar.getInstance();
+        Log.e("Date is: ", date.toString());
 
-        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t20224811";
+        year = date.get(Calendar.YEAR);
+        Log.e("Year is:", String.valueOf(year));
+        month = date.get(Calendar.MONTH) + 1;
+        Log.e("Month is:", String.valueOf(month));
+        day = date.get(Calendar.DAY_OF_MONTH);
+        Log.e("Day is:", String.valueOf(day));
 
+        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + "11";
         //Perform obtaining buy and sell rate.
         CallLiraAPI task1 = new CallLiraAPI();
         task1.execute(url1);
+
+
+
 
 
         //Display current rate for user.
