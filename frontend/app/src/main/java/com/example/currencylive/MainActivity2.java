@@ -352,10 +352,17 @@ public class MainActivity2 extends AppCompatActivity {
         day = date.get(Calendar.DAY_OF_MONTH);
         Log.e("Day is:", String.valueOf(day));
 
-        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + "11";
-        //Perform obtaining buy and sell rate.
-        CallLiraAPI task1 = new CallLiraAPI();
-        task1.execute(url1);
+        String var = "";
+
+        for (int i = 0; i < 30; i++){
+            var = String.valueOf(i);
+            String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + var;
+            //Perform obtaining buy and sell rate.
+            CallLiraAPI task1 = new CallLiraAPI();
+            task1.execute(url1);
+        }
+
+
 
 
 
