@@ -360,8 +360,9 @@ public class MainActivity2 extends AppCompatActivity {
 
 
         String var = "";
-
-//        for (int i = 0; i < 30; i++){
+        //var apparently seems to be the hour that the rate is updated.
+        //Get the update date and set the var to be the hour.
+//        for (int i = 0; i < 24; i++){
 //            var = String.valueOf(i);
 //            String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + var;
 //
@@ -369,7 +370,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         //Perform obtaining buy and sell rate.
         CallLiraAPI task1 = new CallLiraAPI();
-        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + "11";
+        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + "14";
         task1.execute(url1);
 
 
