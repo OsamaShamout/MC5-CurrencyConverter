@@ -9,9 +9,28 @@
 
 
     <TextView
+        android:id="@+id/dialogBoxUniversal2"
+        android:layout_width="303dp"
+        android:layout_height="37dp"
+        android:layout_marginBottom="270dp"
+        android:fontFamily="@font/poppins_bold"
+        android:gravity="center"
+        android:minHeight="40dp"
+        android:textAllCaps="true"
+        android:textColor="#FF5252"
+        android:textSize="12sp"
+        app:autoSizeTextType="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.583"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/converter"
+        app:layout_constraintVertical_bias="0.725" />
+
+    <TextView
         android:id="@+id/dialogBoxUniversal1"
-        android:layout_width="217dp"
-        android:layout_height="wrap_content"
+        android:layout_width="210dp"
+        android:layout_height="26dp"
         android:layout_marginStart="97dp"
         android:layout_marginEnd="97dp"
         android:layout_marginBottom="270dp"
@@ -27,7 +46,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/converter"
-        app:layout_constraintVertical_bias="0.19999999" />
+        app:layout_constraintVertical_bias="0.215" />
 
     <EditText
         android:id="@+id/valueInput"
@@ -36,7 +55,6 @@
         android:layout_marginStart="97dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="98dp"
-        android:layout_marginBottom="10dp"
         android:fontFamily="@font/poppins_bold"
         android:hint="Enter Value"
         android:inputType="numberDecimal"
@@ -52,7 +70,6 @@
         android:layout_width="216dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
-        android:layout_marginTop="14dp"
         android:layout_marginBottom="382dp"
         android:fontFamily="@font/poppins_bold"
         android:inputType="numberDecimal"
@@ -85,7 +102,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="97dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="207dp"
         android:fontFamily="@font/poppins_bold"
         android:text="Amount"
@@ -115,7 +132,6 @@
         android:layout_width="130dp"
         android:layout_height="48dp"
         android:layout_marginStart="140dp"
-        android:layout_marginTop="20dp"
         android:layout_marginEnd="141dp"
         android:layout_marginBottom="325dp"
         android:backgroundTint="#40CEEF"
@@ -131,13 +147,13 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/resultValue"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/switchCurrency"
         android:layout_width="70dp"
         android:layout_height="48dp"
-        android:layout_marginTop="33dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="33dp"
         android:backgroundTint="#40CEEF"
         android:fontFamily="@font/poppins_bold"
@@ -160,7 +176,6 @@
         android:layout_marginStart="97dp"
         android:layout_marginTop="18dp"
         android:layout_marginEnd="230dp"
-        android:layout_marginBottom="14dp"
         android:fontFamily="@font/poppins_bold"
         android:text="Result"
         android:textColor="#000000"

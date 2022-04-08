@@ -325,9 +325,11 @@ public class MainActivity2 extends AppCompatActivity {
     EditText value_inputted;
     TextView result_value;
     TextView dialogue1;
+    TextView dialogue2;
     int year;
     int month;
     int day;
+    Date date;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
@@ -339,33 +341,36 @@ public class MainActivity2 extends AppCompatActivity {
         result_value = (TextView) findViewById(R.id.resultValue);
 
         dialogue1 = (TextView) findViewById(R.id.dialogBoxUniversal1);
+        dialogue2 = (TextView) findViewById(R.id.dialogBoxUniversal2);
 
         //URL API to obtain buy and sell rates.
 
-        Calendar date = Calendar.getInstance();
-        Log.e("Date is: ", date.toString());
+        Calendar right_now = Calendar.getInstance();
+        Log.e("Date is: ", right_now.toString());
 
-        year = date.get(Calendar.YEAR);
+        year = right_now.get(Calendar.YEAR);
         Log.e("Year is:", String.valueOf(year));
-        month = date.get(Calendar.MONTH) + 1;
+        month = right_now.get(Calendar.MONTH) + 1;
         Log.e("Month is:", String.valueOf(month));
-        day = date.get(Calendar.DAY_OF_MONTH);
+        day = right_now.get(Calendar.DAY_OF_MONTH);
         Log.e("Day is:", String.valueOf(day));
+        date = right_now.getTime();
+        Log.e("Day is:", date.toString());
+
+
 
         String var = "";
 
-        for (int i = 0; i < 30; i++){
-            var = String.valueOf(i);
-            String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + var;
-            //Perform obtaining buy and sell rate.
-            CallLiraAPI task1 = new CallLiraAPI();
-            task1.execute(url1);
-        }
+//        for (int i = 0; i < 30; i++){
+//            var = String.valueOf(i);
+//            String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + var;
+//
+//        }
 
-
-
-
-
+        //Perform obtaining buy and sell rate.
+        CallLiraAPI task1 = new CallLiraAPI();
+        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + "11";
+        task1.execute(url1);
 
 
         //Display current rate for user.
@@ -375,6 +380,7 @@ public class MainActivity2 extends AppCompatActivity {
             public void run() {
                 if (value_buy != null) {
                     dialogue1.setText("Buy at:  " + value_buy + "\t Sell at:  " + value_sell);
+                    dialogue2.setText("Updated at: " + date);
                     return;
                 }
 
