@@ -100,7 +100,7 @@ public class MainActivity2 extends AppCompatActivity {
 
                 //Prepare the regex expression to extract the conversion rate //? in case the rate becomes
                 //above 5 digits (Let's hope it won't).
-                Pattern p = Pattern.compile("1649\\d\\d\\d\\d\\d\\d\\d\\d\\d,(\\d\\d\\d\\d\\d\\d?)", Pattern.MULTILINE);
+                Pattern p = Pattern.compile("1650\\d\\d\\d\\d\\d\\d\\d\\d\\d,(\\d\\d\\d\\d\\d\\d?)", Pattern.MULTILINE);
                 Matcher m1 = p.matcher(rate_sell);
                 Matcher m2 = p.matcher(rate_buy);
 
@@ -370,7 +370,8 @@ public class MainActivity2 extends AppCompatActivity {
 
         //Perform obtaining buy and sell rate.
         CallLiraAPI task1 = new CallLiraAPI();
-        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + "14";
+        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + "5";
+        //https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t20224175
         task1.execute(url1);
 
 
