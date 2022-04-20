@@ -370,7 +370,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         //Perform obtaining buy and sell rate.
         CallLiraAPI task1 = new CallLiraAPI();
-        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + "5";
+        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + "1";
         //https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t20224175
         task1.execute(url1);
 
@@ -393,7 +393,7 @@ public class MainActivity2 extends AppCompatActivity {
     }
 
 
-    //OnClick the flags rotate positions indication the transaction:
+        //OnClick the flags rotate positions indication the transaction:
     //USD --> LBP means sell USD to LBP.
     //LBP --> USD means buy USD from LBP.
     public void OnClickSwitch(View view) {
