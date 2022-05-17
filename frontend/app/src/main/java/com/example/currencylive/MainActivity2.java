@@ -427,12 +427,12 @@ public class MainActivity2 extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Please wait.", Toast.LENGTH_SHORT).show();
 
         //Perform to insert queries to DB.
-//        CallSendDBAPI task2 = new CallSendDBAPI();
-//        task2.execute(url2);
-//
-//        //Retrieve information from DB and return result to user.
-//        CallDBAPI task3 = new CallDBAPI();
-//        task3.execute(url3);
+       CallSendDBAPI task2 = new CallSendDBAPI();
+       task2.execute(url2);
+
+       //Retrieve information from DB and return result to user.
+       CallDBAPI task3 = new CallDBAPI();
+       task3.execute(url3);
     }
 
     //Back to main menu
