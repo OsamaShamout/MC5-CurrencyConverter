@@ -95,12 +95,15 @@ public class MainActivity2 extends AppCompatActivity {
 
                 //Convert JSON objects into Strings.
                 JSONObject json_obj = new JSONObject(s);
-                String rate_sell = json_obj.getString("sell");
-                String rate_buy = json_obj.getString("buy");
+                //Enter first layer "Lirarate"
+                JSONObject json_obj2 = json_obj.getJSONObject("lirarate");
+                //Enter second layer "the sell and buy"
+                String rate_sell = json_obj2.getString("sell");
+                String rate_buy = json_obj2.getString("buy");
 
                 //Prepare the regex expression to extract the conversion rate //? in case the rate becomes
                 //above 5 digits (Let's hope it won't).
-                Pattern p = Pattern.compile("1652\\d\\d\\d\\d\\d\\d\\d\\d\\d,(\\d\\d\\d\\d\\d\\d?)", Pattern.MULTILINE);
+                Pattern p = Pattern.compile("1663\\d\\d\\d\\d\\d\\d\\d\\d\\d,(\\d\\d\\d\\d\\d\\d?)", Pattern.MULTILINE);
                 Matcher m1 = p.matcher(rate_sell);
                 Matcher m2 = p.matcher(rate_buy);
 
@@ -371,7 +374,7 @@ public class MainActivity2 extends AppCompatActivity {
         //Perform obtaining buy and sell rate.
         CallLiraAPI task1 = new CallLiraAPI();
         //String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t" + year + month + day + "1";
-        String url1 = "https://lirarate.org/wp-json/lirarate/v2/rates?currency=LBP&_ver=t202251723";
+        String url1 = "https://lirarate.org/wp-json/lirarate/v2/all?currency=LBP&_ver=t202291718";
         task1.execute(url1);
 
 
